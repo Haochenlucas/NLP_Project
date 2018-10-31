@@ -22,3 +22,12 @@ print('Extract questionlines:\n',questionlines,'\n')
 for ques in questionlines:
     for word in ques:
         print(nltk.pos_tag(nltk.word_tokenize(word)))
+
+
+print ("Get question type")
+for ques in questionlines:
+    for word in ques:
+        word_w_tag = nltk.pos_tag(nltk.word_tokenize(word))
+        tag = word_w_tag[0][1]
+        if (tag == "WDT" or tag == "WP" or tag == "WP$" or tag == "WRB"):
+            print (word_w_tag)
