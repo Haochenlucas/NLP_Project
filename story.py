@@ -6,38 +6,46 @@ from nltk.corpus import wordnet as wn
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
 
-cwd = os.getcwd()
-story = open(cwd + '/project/NLP_project/developset/1999-W02-5.story', encoding='UTF-8')
-story = story.read()
-story = story.replace('\n',' ')
-storylines = sent_tokenize(story)
-print(storylines)
-dictlines = [[] for i in range(storylines.__len__())]
-for i,sent in enumerate(storylines):
-    dictlines[i]=word_tokenize(sent)
-# print(dictlines)
+# This is the class to store story instance
+class Story:
+    # Maybe NER library as well
+    def __init__(self, storyFileName):
+        cwd = os.getcwd()
+        storyFile = open(cwd + '/project/NLP_project/developset/' + storyFileName, encoding='UTF-8')
+        story = storyFile.read()
+        story = story.replace('\n',' ')
+        cut = 'TEXT: '
+        story = story.split(cut, 1)[1]
+        self.sentences = sent_tokenize(story)
+        storyFile.close()
 
-# STEMMING
-# print("after stemming")
-# ps = PorterStemmer()
-# for line in dictlines:
-#     for sent in line:
-#         print(ps.stem(sent))
+        # score of each sentences for a single question
+        # should be initialzed to 0 after answering a question
+        self.score = []
 
-# Remove stop words
-print("Filtering stop words")
-stopsWords = set(stopwords.words('english'))
-print(stopsWords)
-wordsFiltered = []
-for line in dictlines:
-    for w in line:
-        if w not in stopsWords:
-            # This "w" here needs to be case insenstive
-            wordsFiltered.append(w)
+    # word tokenize for sentences
+    def word_tokenize(self):
+        return
 
-print(wordsFiltered)
+    # remove stop words
+    def remove_stopwords(self):
+        return
 
-# for line in dictlines:
-#     for sent in line:
-#         print(nltk.pos_tag(nltk.word_tokenize(sent)))
+    # steming words
+    def stem_words(self):
+        return
+
+    # pos tagging
+    def pos_tag(self):
+        return
+
+    # # tage NP in the Story
+    # def ner_tagging(sent):
+    #     return
+
+    # give score to all sentences based on the given question
+    def update_score(self):
+        return
+    
