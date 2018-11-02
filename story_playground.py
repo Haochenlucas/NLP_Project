@@ -21,24 +21,24 @@ from nltk.stem import WordNetLemmatizer
 # print(lemmatizer.lemmatize("run",'v'))
 
 cwd = os.getcwd()
-story = open(cwd + '/nlp_project/NLP_project/developset/1999-W02-5.story', encoding='UTF-8')
+story = open(cwd + '/developset/1999-W02-5.story', encoding='UTF-8')
 story = story.read()
 story = story.replace('\n',' ')
 sep = 'TEXT: '
 rest = story.split(sep, 1)[1]
 storylines = sent_tokenize(story)
 print(storylines)
-# dictlines = [[] for i in range(storylines.__len__())]
-# for i,sent in enumerate(storylines):
-#     dictlines[i]=word_tokenize(sent)
-# # print(dictlines)
+dictlines = [[] for i in range(storylines.__len__())]
+for i,sent in enumerate(storylines):
+    dictlines[i]=word_tokenize(sent)
+# print(dictlines)
 
-# # STEMMING
-# # print("after stemming")
-# # ps = PorterStemmer()
-# # for line in dictlines:
-# #     for sent in line:
-# #         print(ps.stem(sent))
+# STEMMING
+# print("after stemming")
+# ps = PorterStemmer()
+# for line in dictlines:
+#     for sent in line:
+#         print(ps.stem(sent))
 
 # # Remove stop words
 # print("Filtering stop words")
@@ -53,6 +53,6 @@ print(storylines)
 
 # print(wordsFiltered)
 
-# for line in dictlines:
-#     for sent in line:
-#         print(nltk.pos_tag(nltk.word_tokenize(sent)))
+for line in dictlines:
+    for sent in line:
+        print(nltk.pos_tag(nltk.word_tokenize(sent)))

@@ -4,7 +4,7 @@ import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 
 cwd = os.getcwd()
-question= open(cwd + '/nlp_project/NLP_project/developset/1999-W02-5.questions', encoding='UTF-8')
+question= open(cwd + '/developset/1999-W02-5.questions', encoding='UTF-8')
 question = question.read().splitlines()
 n = question.count('')
 while n > 0:
