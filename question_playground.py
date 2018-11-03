@@ -19,11 +19,6 @@ print('After tokenize:\n',questionlines,'\n')
 questionlines = questionlines[1:len(questionlines):3]
 print('Extract questionlines:\n',questionlines,'\n')
 
-for ques in questionlines:
-    for word in ques:
-        print(nltk.pos_tag(nltk.word_tokenize(word)))
-
-
 print ("Get question type")
 for ques in questionlines:
     for word in ques:
@@ -31,3 +26,16 @@ for ques in questionlines:
         tag = word_w_tag[0][1]
         if (tag == "WDT" or tag == "WP" or tag == "WP$" or tag == "WRB"):
             print (word_w_tag)
+
+# POS
+pos_question=[]
+for i,ques in enumerate(questionlines):
+    questionlines = ' '.join(ques)
+    tokens = nltk.word_tokenize(questionlines)
+    pos = nltk.pos_tag(tokens)
+    pos_question.append(pos)
+print('After POS\n',pos_question,'\n')
+
+for ques in pos_question:
+    namedEnt = nltk.ne_chunk(pos_question[0], binary=True )
+    namedEnt.draw()

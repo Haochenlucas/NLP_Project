@@ -25,12 +25,14 @@ class Story:
         self.sentences = sent_tokenize(self.story)
         self.bags = [[] for i in range(len(self.sentences))]
         # word tokenize for sentences
+        self.sent_POS = []
         for i,sent in enumerate(self.sentences):
             self.bags[i] = word_tokenize(sent)
 
     # remove stop words
     def remove_stopwords(self, wordbags):
         stopsWords = set(stopwords.words('english'))
+        # print(stopsWords)
         bagsFiltered = []
         for bag in wordbags:
             wordsFiltered = []
@@ -55,13 +57,29 @@ class Story:
     # pos tagging
     def pos_tag(self, wordbags):
         for line in wordbags:
-            for sent in line:
-                print(nltk.pos_tag(nltk.word_tokenize(sent)))
+            self.sent_POS.append(nltk.pos_tag(line))
+        return self.sent_POS
 
     # # tage NP in the Story
-    # def ner_tagging(sent):
+    # def ner_tag(sent):
     #     return
 
     def print_sents(self):
         print(self.sentences)
+    
+    # Grouping NE
+    def chuck_NE(self):
+        namedEnt = []
+        for line in self.sent_POS:
+            namedEnt.append(nltk.ne_chunk(line, binary=True))
+
+        output = []
+        for line in namedEnt:
+            for NE in line:
+                if(type(NE) is nltk.tree.Tree and NE._label == 'NE'):
+                    NP = ""
+                    for w in NE:
+                        NP += w[0] + " "
+                    output.append(NP)
+        print(output)
     

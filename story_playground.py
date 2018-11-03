@@ -40,19 +40,28 @@ for i,sent in enumerate(storylines):
 #     for sent in line:
 #         print(ps.stem(sent))
 
-# # Remove stop words
-# print("Filtering stop words")
-# stopsWords = set(stopwords.words('english'))
+# Remove stop words
+print("Filtering stop words")
+stopsWords = set(stopwords.words('english'))
 # print(stopsWords)
-# wordsFiltered = []
-# for line in dictlines:
-#     for w in line:
-#         if w not in stopsWords:
-#             # This "w" here needs to be case insenstive
-#             wordsFiltered.append(w)
-
-# print(wordsFiltered)
-
+wordsFiltered = []
 for line in dictlines:
-    for sent in line:
-        print(nltk.pos_tag(nltk.word_tokenize(sent)))
+    for w in line:
+        if w not in stopsWords:
+            # This "w" here needs to be case insenstive
+            wordsFiltered.append(w)
+
+print(wordsFiltered)
+
+# for line in dictlines:
+#     for sent in line:
+#         print(nltk.pos_tag(nltk.word_tokenize(sent)))
+
+os.environ['JAVAHOME'] = "/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home" #insert approriate version of jdk
+from nltk.tag import StanfordNERTagger
+#NER
+eng_tagger = StanfordNERTagger(model_filename=cwd + '/stanford-ner-2018-10-16/classifiers/english.muc.7class.distsim.crf.ser.gz',
+          path_to_jar=cwd + '/stanford-ner-2018-10-16/stanford-ner.jar')
+ner_question=[]
+ner_question.append(eng_tagger.tag(wordsFiltered))
+print('After NER:\n',ner_question,'\n')
