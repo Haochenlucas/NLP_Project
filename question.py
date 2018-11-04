@@ -71,21 +71,29 @@ class Question():
     
     # Grouping NE
     def chuck_NE(self):
-        namedEnt = []
-        for line in self.sent_POS:
-            namedEnt.append(nltk.ne_chunk(line, binary=True))
+        grammar = r"""  
+                NP: {<DT>?(<JJ>* <NN.*>)? <JJ>* <NN.*>+}
+                """
+        cp = nltk.RegexpParser(grammar)
+        tree_ques = []
+        np_tree = [[] for i in range(len(self.sent_POS))]
+        np_chunk = [[] for i in range(len(self.sent_POS))]
+        for i, ques in enumerate(self.sent_POS):
+            tree_ques.append(cp.parse(ques))
 
-        output = set()
-        for line in namedEnt:
-            for NE in line:
-                if(type(NE) is nltk.tree.Tree and NE._label == 'NE'):
-                    NP = ""
-                    for w in NE:
-                        NP += w[0] + " "
-                    output.add(NP)
-                # if (namedEnt is tree type and the first attribute is NE):
-                #     allne.append(NE)
-        print(output)
+        for i, line in enumerate(tree_ques):
+            for NP in line:
+                if (type(NP) is nltk.tree.Tree and NP._label == 'NP'):
+                    np_tree[i].append(NP)
+
+        for i, NP in enumerate(np_tree):
+            for j, subNP in enumerate(NP):
+                set = []
+                for w in subNP:
+                    set.append(w[0])
+                s = ' '.join(set)
+                np_chunk[i].append(s)
+        return np_chunk
 
     def print_sents(self):
         print(self.questionsID)
