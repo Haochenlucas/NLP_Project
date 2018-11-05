@@ -72,42 +72,48 @@ class Story:
     
     # Grouping NE
     def chuck_NE(self):
-        grammar = r"""  
-                NP: {<DT>?(<JJ>* <NN.*>)? <JJ>* <NN.*>+}
-                """
+        # Find all NP that matches our grammar and put those in trees
+        grammar = r"""
+        NP: {<DT>?(<JJ>* <NN.*>)? <JJ>* <NN.*>+}
+        """
         cp = nltk.RegexpParser(grammar)
-        tree_ques = []
-        np_tree = [[] for i in range(len(self.sent_POS))]
-        np_chunk = [[] for i in range(len(self.sent_POS))]
+        tree_S = []
         for i, ques in enumerate(self.sent_POS):
-            tree_ques.append(cp.parse(ques))
+            tree_S.append(cp.parse(ques))
 
-        for i, line in enumerate(tree_ques):
-            for NP in line:
+        # Use Stanfore NER to tag the all the words in the story
+        ner_story =[[]for i in range(len(self.bags))]
+        cwd = os.getcwd()
+        eng_tagger = StanfordNERTagger(model_filename=cwd + '/stanford-ner-2018-10-16/classifiers/english.muc.7class.distsim.crf.ser.gz',
+                path_to_jar=cwd + '/stanford-ner-2018-10-16/stanford-ner.jar')
+        for i,sent in enumerate(self.bags):
+            ner_story[i] = eng_tagger.tag(sent)
+
+        # Put NE tag on the trees
+        nerchunk_story=[[]for i in range(len(self.bags))]
+        for i, line in enumerate(tree_S):
+            start=0
+            for j,NP in enumerate(line):
                 if (type(NP) is nltk.tree.Tree and NP._label == 'NP'):
-                    np_tree[i].append(NP)
+                    for l in range(start,start+len(NP)):
+                        if ner_story[i][l][1] != 'O':
+                            nerchunk_story[i].append(NP)
+                            nerchunk_story[i].append(ner_story[i][l][1])
+                            break
+                    start += len(NP)
+                else:
+                    start += 1
 
-        for i, NP in enumerate(np_tree):
-            for j, subNP in enumerate(NP):
-                set = []
-                for w in subNP:
-                    set.append(w[0])
-                s = ' '.join(set)
-                np_chunk[i].append(s)
-        return np_chunk
-        # print('The NP chunk\n',np_chunk,'\n')
-
-        # cwd = os.getcwd()
-        # eng_tagger = StanfordNERTagger(model_filename=cwd + '/stanford-ner-2018-10-16/classifiers/english.muc.7class.distsim.crf.ser.gz',
-        #         path_to_jar=cwd + '/stanford-ner-2018-10-16/stanford-ner.jar')
-        # ne_story=[[]for i in range(len(np_chunk))]
-        # for i,NP in enumerate(np_chunk):
-        #     set=[]
-        #     for w in NP:
-        #         words = nltk.word_tokenize(w)
-        #         s = eng_tagger.tag(words)
-        #         for w in s:
-        #             if w[1] != 'O':
-        #                 print(s,w[1])
-        #                 break
+        # Normalize out put of all marked NE
+        NPchunk_tagged = [[]for i in range(len(nerchunk_story))]
+        for k,sent in enumerate(nerchunk_story):
+            for i,parse in  enumerate(sent):
+                if (type(parse)==nltk.tree.Tree):
+                    leaf = parse.leaves()
+                    set = []
+                    for j,w in enumerate(leaf):
+                        set.append(w[0])
+                    set.append(nerchunk_story[k][i + 1])
+                    NPchunk_tagged[k].append(set)
+        return NPchunk_tagged
     
