@@ -5,6 +5,7 @@ import os
 # Functions:
 
 def find_answer(best, question):
+    temp = 1
     for sent_idx in best:
             for NE in NE_S_chuck[sent_idx]:
                 if (NE[-1] in question.answer_NP[x]):
@@ -12,14 +13,14 @@ def find_answer(best, question):
     return ""
 
 
-# cwd = os.getcwd()
-# for file in os.listdir(cwd + '/developset'):
-#     if file.endswith(".story"):
-        # instance = file[:-6]
-        
+cwd = os.getcwd()
+for file in os.listdir(cwd + '/developset'):
+    if file.endswith(".story"):
+        instance = file[:-6]
+
 # Creat a story object
 # story = Story(instance + ".story")
-story = Story("1999-W06-2.story")
+story = Story("1999-W07-2.story")
 # Do things to the story object
 s_bags = story.pos_tag(story.bags)
 NE_S_chuck = story.chuck_NE()
@@ -29,7 +30,7 @@ s_bags = story.stem_words(s_bags)
 
 # Creat a question
 # question = Question(instance + ".questions")
-question = Question("1999-W06-2.questions")
+question = Question("1999-W07-2.questions")
 # Do things to the question object
 q_bags = question.pos_tag(question.questions)
 NE_Q_chuck = question.chuck_NE()
@@ -41,7 +42,7 @@ q_bags = story.stem_words(q_bags)
 # Loop all the questions for that story
 for x,q in enumerate(q_bags):
 
-    # Scoring system: 
+    # Scoring system:
     # 1. Check question type and only analize sentences that contain the right type of NE
     # 2. Matching NP form Q with sentences in S
 
@@ -70,15 +71,15 @@ for x,q in enumerate(q_bags):
     max_score = max(score)
     best = [i for i, x in enumerate(score) if x == max_score]
     # O/I the answer
-    print(question.questiontxt[x])
-    
+    print("QuestionID:",question.questionsID[x])
+    # print(question.questiontxt[x])
+
     # Find the match NP in sentence with the highest score
 
     answer = find_answer(best, question)
     if (answer != ""):
-        print("Answer:" + answer)
+        print("Answer: " + answer,'\n')
     else:
-        for m,a in enumerate(best):
-            print("Answer in: " + story.sentences[a])
-    print("\n")
+       print("Answer: " + story.sentences[best[0]],'\n')
+    # print("\n")
 

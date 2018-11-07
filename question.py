@@ -72,7 +72,14 @@ class Question():
     # Grouping NE
     def chuck_NE(self):
         grammar = r"""  
-                NP: {<DT>?(<JJ>* <NN.*>)? <JJ>* <NN.*>+}
+                NP: {<DT>?<JJ|JJR|VBN|VBG>*<CD><JJ|JJR|VBN|VBG>*<NNS|NN>+}
+        {<DT>?<JJS><NNS|NN>?}
+        {<DT>?<PRP|NN|NNS><POS><NN|NNP|NNS>*}
+        {<DT>?<NNP>+<POS><NN|NNP|NNS>*}
+        {<DT|PRP\$>?<RB>?<JJ|JJR|VBN|VBG>*<NN|NNP|NNS>+}
+        {<WP|WDT|PRP|EX>}
+        {<DT><JJ>*<CD>}
+        {<\$>?<CD>+}
                 """
         cp = nltk.RegexpParser(grammar)
         tree_ques = []
@@ -93,6 +100,7 @@ class Question():
                     set.append(w[0])
                 s = ' '.join(set)
                 np_chunk[i].append(s)
+        # print(np_chunk)
         return np_chunk
 
     def print_sents(self):

@@ -8,7 +8,7 @@ from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
-os.environ['JAVAHOME'] = "/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home" #insert approriate version of jdk
+os.environ['JAVAHOME'] = "D:/Java/jdk1.8.0_191/bin"  #insert approriate version of jdk
 from nltk.tag import StanfordNERTagger
 
 # This is the class to store story instance
@@ -74,7 +74,14 @@ class Story:
     def chuck_NE(self):
         # Find all NP that matches our grammar and put those in trees
         grammar = r"""
-        NP: {<DT>?(<JJ>* <NN.*>)? <JJ>* <NN.*>+}
+        NP: {<DT>?<JJ|JJR|VBN|VBG>*<CD><JJ|JJR|VBN|VBG>*<NNS|NN>+}
+        {<DT>?<JJS><NNS|NN>?}
+        {<DT>?<PRP|NN|NNS><POS><NN|NNP|NNS>*}
+        {<DT>?<NNP>+<POS><NN|NNP|NNS>*}
+        {<DT|PRP\$>?<RB>?<JJ|JJR|VBN|VBG>*<NN|NNP|NNS>+}
+        {<WP|WDT|PRP|EX>}
+        {<DT><JJ>*<CD>}
+        {<\$>?<CD>+}
         """
         cp = nltk.RegexpParser(grammar)
         tree_S = []
@@ -115,5 +122,6 @@ class Story:
                         set.append(w[0])
                     set.append(nerchunk_story[k][i + 1])
                     NPchunk_tagged[k].append(set)
+        # print(NPchunk_tagged)
         return NPchunk_tagged
     
