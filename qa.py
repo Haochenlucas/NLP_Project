@@ -56,7 +56,6 @@ while (line):
     line = input.readline()
     line = line.replace('\n','')
 
-
 for foldname in instances: 
     # reponsefile = open("reponsefile.txt","w")
     # Creat a story object
@@ -170,14 +169,15 @@ for foldname in instances:
     print(score_table)
     for i,score in enumerate(score_table):
         max_score = max(score)
-        print(max_score)
+        print(question.questiontxt[i])
         best = [i for i, x in enumerate(score) if x == max_score]
         for m, a in enumerate(best):
             print("Answer: " + story.sentences[a] + '\n')
         answer = find_answer(best, question,i)
         for m, a in enumerate(answer):
             if (a != ""):
-                print("Answer: " + answer[m] + '\n')
+                if(a not in list(list(zip(*NE_Q_chuck[i]))[0])):
+                    print("Answer: " + answer[m] + '\n')
 
     # O/I the answer
     # print(question.questiontxt[x])

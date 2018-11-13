@@ -9,7 +9,8 @@ from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from enum import Enum
-os.environ['JAVAHOME'] = "D:/Java/jdk1.8.0_191/bin" #insert approriate version of jdk
+# os.environ['JAVAHOME'] = "D:/Java/jdk1.8.0_191/bin" #insert approriate version of jdk
+os.environ['JAVAHOME'] = "/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home" #insert approriate version of jdk
 from nltk.tag import StanfordNERTagger
 
 class Question():
