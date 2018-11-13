@@ -1,4 +1,11 @@
 from nltk.corpus import wordnet
-spring = wordnet.synsets("a second")[0]
-time = wordnet.synsets("period")[0]
+import itertools
+from nltk.corpus.reader import VERB
+spring = wordnet.synsets("run")[0]
+time = wordnet.synsets("operate")[0]
 print(time.wup_similarity(spring))
+#
+# if not wordnet.synsets('Alice'):
+#   print('Not an English Word')
+# else:
+#   print('English Word')
