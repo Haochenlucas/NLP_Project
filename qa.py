@@ -13,6 +13,13 @@ def find_answer(best, question,i):
                     answer.append(NE[0])
     return answer
 
+def filter_NE_Chuck(NE_chuck):
+    badword = ["who"]
+    for sents in NE_chuck:
+        for chuck in sents:
+            if(chuck[0] in badword):
+                chuck[1] = "none"
+
 # def word_match(score, Q_chuck, scored_chuck):
 #     # Give score for each sentences in the story
 #     scored = False
@@ -65,6 +72,7 @@ for foldname in instances:
     s_bags = story.pos_tag(story.bags)
     # Do things to the story object
     NE_S_chuck = story.chuck_NE()
+    filter_NE_Chuck(NE_S_chuck)
     s_bags = story.remove_stopwords(story.bags)
     s_bags = story.stem_words(s_bags)
     # print(s_bags)
@@ -124,7 +132,6 @@ for foldname in instances:
     for i,q_sent in enumerate(NE_Q_chuck):
         prop = list(list(zip(*q_sent))[1])
         for word in q_sent:
-            print(word)
             # who rules:
             if(word[0].lower() == "who"):
                 if 'PERSON' not in prop and 'ORGANIZATION'not in prop:
@@ -136,12 +143,26 @@ for foldname in instances:
                     for j, s_sent in enumerate(NE_S_chuck):
                         if  'preson' in list(list(zip(*s_sent))[1]):
                             score_table[i][j] += 4
-                else:
-                    for j, s_sent in enumerate(NE_S_chuck):
-                        if 'preson' in list(list(zip(*s_sent))[1]):
-                            score_table[i][j] += 6
-                        if 'organization' in list(list(zip(*s_sent))[1]):
-                            score_table[i][j] += 6
+                # else:
+                #     for j, s_sent in enumerate(NE_S_chuck):
+                #         if 'preson' in list(list(zip(*s_sent))[1]):
+                #             score_table[i][j] += 6
+                #         if 'organization' in list(list(zip(*s_sent))[1]):
+                #             score_table[i][j] += 6
+
+            elif(word[0].lower() == "where"):
+                for j, sent in enumerate(NE_S_chuck):
+                    tags = list(list(zip(*sent))[1])
+                    if(('LOCATION' in tags) or ('place' in tags) or ('ORGANIZATION' in tags) or ('organization' in tags)):
+                        score_table[i][j] += 6
+            
+            elif(word[0].lower() == "when"):
+                for j, sent in enumerate(NE_S_chuck):
+                    tags = list(list(zip(*sent))[1])
+                    if(("DATE" in tags) or ("TIME" in tags) or ("period" in tags)):
+                        score_table[i][j] += 4
+                    if(("start" in q_sent or "begin" in q_sent) and ("start" in tags or "begin" in tags or "since" in tags or "year" in tags)):
+                        score_table[i][j] += 20
                 # VB score
                 # for word in q_sent:
                 #     if re.match("VB\w+", word[1]):
@@ -162,35 +183,20 @@ for foldname in instances:
                 #                                 score_table[i][j] += 1
 
 
-
-
-
-
     print(score_table)
+    # O/I the answer
     for i,score in enumerate(score_table):
         max_score = max(score)
         print(question.questiontxt[i])
         best = [i for i, x in enumerate(score) if x == max_score]
         for m, a in enumerate(best):
-            print("Answer: " + story.sentences[a] + '\n')
+            print("Answer: " + story.sentences[a])
         answer = find_answer(best, question,i)
+        print("\n")
         for m, a in enumerate(answer):
             if (a != ""):
                 if(a not in list(list(zip(*NE_Q_chuck[i]))[0])):
-                    print("Answer: " + answer[m] + '\n')
-
-    # O/I the answer
-    # print(question.questiontxt[x])
-    # print(question.questionsID[x])
-    # reponsefile.write(question.questiontxt[x])
-    # reponsefile.write(question.questionsID[x])
-
-    # Find the match NP in sentence with the highest score
-    # for m,a in enumerate(best):
-    #     print("Answer: " + story.sentences[a] + '\n')
-    #     # reponsefile.write("Answer: " + story.sentences[a] + '\n')
-    # answer = find_answer(best, question)
-    # for m, a in enumerate(answer):
-    #     if (a != ""):
-    #         print("Answer: " + answer[m] + '\n')
-            # reponsefile.write("Answer: " + answer + '\n')
+                    print("Answer: " + answer[m])
+        
+        print("\n")
+        print("\n")

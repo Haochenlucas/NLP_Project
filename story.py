@@ -148,7 +148,7 @@ class Story:
                     prop.append(NP[1])
                     nerchunk_story[i].append(prop)
                     start += 1
-        print(nerchunk_story)
+        # print(nerchunk_story)
         # Normalize out put of all marked NE
         # NPchunk_tagged = [[]for i in range(len(nerchunk_story))]
         # for k,sent in enumerate(nerchunk_story):

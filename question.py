@@ -33,6 +33,8 @@ class Question():
                 self.questionsID[int(i/3)] = line[2]
             self.questions[i] = line[2:]
         self.questions = self.questions[1:len(self.questions):3]
+        for i,ques in enumerate(self.questions):
+            self.questions[i] = self.questions[i][0:-1]
         self.sent_POS = []
         self.answer_NP = []
 
@@ -186,7 +188,7 @@ class Question():
                     prop.append(NP[1])
                     nerchunk_story[i].append(prop)
                     start += 1
-        print(nerchunk_story)
+        # print(nerchunk_story)
         # nerchunk_story=[[]for i in range(len(self.questions))]
         # for i, line in enumerate(tree_S):
         #     start=0
@@ -252,17 +254,18 @@ class Question():
                 if (tag == "WDT" or tag == "WP" or tag == "WP$" or tag == "WRB"):
                     # This part can have a lot optimization
                     if(word[0].lower() == "who"):
-                        self.answer_NP.append(["LOCATION", "PERSON", "ORGANIZATION",'person'])
+                        self.answer_NP.append(["LOCATION", "PERSON", "ORGANIZATION",'person', "organization"])
                     elif(word[0].lower() == "what"):
                         self.answer_NP.append(["EVERYTHING!!!"])
                     elif(word[0].lower() == "when"):
-                        self.answer_NP.append(["DATA", "TIME",'period'])
+                        self.answer_NP.append(["DATE", "TIME",'period'])
                     elif(word[0].lower() == "where"):
                         self.answer_NP.append(["LOCATION", "ORGANIZATION",'organization','place'])
                     elif(word[0].lower() == "why"):
                         self.answer_NP.append(["EVERYTHING"])
                     elif(word[0].lower() == "how"):
                         self.answer_NP.append(["MONEY", "TIME"])
+                    break
 
     # NER Types:
     # LOCATION
