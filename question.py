@@ -271,7 +271,7 @@ class Question():
                     elif(word[0].lower() == "what"):
                         self.answer_NP.append(["EVERYTHING!!!"])
                     elif(word[0].lower() == "when"):
-                        self.answer_NP.append(["DATE", "TIME",'period'])
+                        self.answer_NP.append(["DATE", "TIME",'time'])
                     elif(word[0].lower() == "where"):
                         self.answer_NP.append(["LOCATION", "ORGANIZATION",'organization','place'])
                     elif(word[0].lower() == "why"):

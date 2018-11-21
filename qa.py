@@ -20,23 +20,6 @@ def filter_NE_Chuck(NE_chuck):
             if(chuck[0] in badword):
                 chuck[1] = "none"
 
-# def word_match(score, Q_chuck, scored_chuck):
-#     # Give score for each sentences in the story
-#     scored = False
-#     # Mark the chuck as scored and not add score again if any word in chuck shows up
-#     # print(NE_Q_chuck)
-#     for chuck in Q_chuck[x]:
-#         if (q_NP in chuck):
-#             chuck_i = Q_chuck[x].index(chuck)
-#             if (chuck_i not in scored_chuck):
-#                 score[j] += 1
-#                 scored = True
-#                 scored_chuck.append(chuck_i)
-#                 break
-#     if(not scored):
-#         score[j] += 1
-#     return score
-
 # NE_S_chuck: NE chuck for sentence i of the story
 # NE_Q_chuck: NE chuck for sentence j of the sentence
 # def match_type(score, NE_S_chuck, NE_Q_chuck, questionType):
@@ -74,7 +57,7 @@ for foldname in instances:
     NE_S_chuck = story.chuck_NE()
     filter_NE_Chuck(NE_S_chuck)
     s_bags = story.remove_stopwords(story.bags)
-    s_bags = story.stem_words(s_bags)
+    # s_bags = story.stem_words(s_bags)
     # print(s_bags)
 
     # Creat a question
@@ -88,44 +71,44 @@ for foldname in instances:
     Q_chuck = question.chuck_NP()
     NE_Q_chuck = question.NER()
     q_bags = story.remove_stopwords(question.questions)
-    q_bags = story.stem_words(q_bags)
+    # q_bags = story.stem_words(q_bags)
     # print(q_bags)
-
-    # Loop all the questions for that story
-    # for x,q in enumerate(q_bags):
-    #     # Scoring system:
-    #     # 1. Check question type and only analize sentences that contain the right type of NE
-    #     # 2. Matching NP form Q with sentences in S
-    #     # score of each sentences for a single question
-    #     # should be initialzed to 0 after answering a question
-    #     score = [0]*len(s_bags)
-    #     for j,s_sent in enumerate(s_bags):
-    #         # +1 for each NP with the matching Q type and not in the Q
-    #         # match_type(score, NE_S_chuck[j], NE_Q_chuck[x], question.answer_NP[x], j)
-    #         scored_chuck = []
-    #         for i,q_NP in enumerate(q):
-    #             # Give score for each sentences in the story
-    #             if (q_NP in s_sent):
-    #                 # +1 for each matching NP
-    #                 score = word_match(score, Q_chuck, scored_chuck)
-    #     print(score)
-    #     # print all the sentences that might have the answers
-
 
 
     # BASIC_RULE WordMatch
     score_table=[]
-    for q_sent in NE_Q_chuck:
+    for x,q_sent in enumerate(NE_Q_chuck):
         score = []
         for s_sent in NE_S_chuck:
             s_score = 0
             for word in s_sent:
-                if word[0] in list(list(zip(*q_sent))[0]):
-                    if word[0] in stopWords:
-                        s_score += 0
-                    else:
-                        s_score += 1
-                else:
+                notFound = True
+                for w in word[0].split():
+                    q_words_lower = [i.lower() for i in q_bags[x]]
+                    if w in q_words_lower:
+                        notFound = True
+                        if w in stopWords:
+                            s_score += 0
+                        else:
+                            scored = False
+                            scored_chuck = []
+                            # Mark the chuck as scored and not add score again if any word in chuck shows up
+                            # print(NE_Q_chuck)
+                            q_NE = list(list(zip(*q_sent))[0])
+                            q_NE_lower = [i.lower() for i in q_NE]
+                            for chuck in q_NE_lower:
+                                if (w in chuck):
+                                    notFound = False
+                                    chuck_i = q_NE_lower.index(chuck)
+                                    if (chuck_i not in scored_chuck):
+                                        s_score += 1
+                                        scored = True
+                                        scored_chuck.append(chuck_i)
+                                        break
+                            if(not scored):
+                                s_score += 1
+
+                if(notFound):
                     if wordnet.synsets(word[0]):
                         for qword in q_sent:
                             if wordnet.synsets(qword[0]):
@@ -143,7 +126,7 @@ for foldname in instances:
                                         if d > max_similarity:
                                             max_similarity = d
                                     if max_similarity > 0.66:
-                                        s_score += max_similarity
+                                        s_score += round(max_similarity, 2)
             score.append(s_score)
         score_table.append(score)
     print(score_table)
@@ -196,7 +179,7 @@ for foldname in instances:
             elif(word[0].lower() == "when"):
                 for j, sent in enumerate(NE_S_chuck):
                     tags = list(list(zip(*sent))[1])
-                    if(("DATE" in tags) or ("TIME" in tags) or ("period" in tags)):
+                    if(("DATE" in tags) or ("time" in tags) or ("period" in tags)):
                         score_table[i][j] += 4
                     if(("start" in q_sent or "begin" in q_sent) and ("start" in tags or "begin" in tags or "since" in tags or "year" in tags)):
                         score_table[i][j] += 20
@@ -212,10 +195,11 @@ for foldname in instances:
         for m, a in enumerate(best):
             print("Answer: " + story.sentences[a])
         answer = find_answer(best, question,i)
-        print("\n")
+        
+        answerout = ""
         for m, a in enumerate(answer):
             if (a != ""):
                 if(a not in list(list(zip(*NE_Q_chuck[i]))[0])):
-                    print("Answer: " + answer[m])
-
+                    answerout += answer[m] + "/ "
+        print("Answer: " + answerout, end="")
         print("\n")
