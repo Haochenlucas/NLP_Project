@@ -5,10 +5,10 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-# os.environ['JAVAHOME'] = "D:/Java/jdk1.8.0_191/bin" #insert approriate version of jdk
-os.environ['JAVAHOME'] = "/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home" #insert approriate version of jdk
+os.environ['JAVAHOME'] = "D:/Java/jdk1.8.0_191/bin" #insert approriate version of jdk
+# os.environ['JAVAHOME'] = "/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home" #insert approriate version of jdk
 from nltk.tag import StanfordNERTagger
-
+import itertools
 # This is the class to store story instance
 class Story:
     # Maybe NER library as well
@@ -42,21 +42,32 @@ class Story:
             if not wordnet.synsets(suspect):
                 # print('Not an English Word')
                 word = [" ".join(word).lower()]
-                word.append('none')
+                word.append(catg[0])
             else:
-                suspect = wordnet.synsets(suspect)[0]
-                typelist = ['period', 'organization', 'cost', 'person', 'place']
-                max = [0.55, 'none']
+                # suspect = wordnet.synsets(suspect)[0]
+                typelist = ['organization','person', 'place','time','cost']
+                max = [0.7, catg[0]]
+                # for ele in typelist:
+                #     type = wordnet.synsets(ele)[0]
+                #     value = 0
+                #     if type.wup_similarity(suspect) == None:
+                #         value = 0
+                #     else:
+                #         value = type.wup_similarity(suspect)
+                #     if max[0] < value:
+                #         max[0] = value
+                #         max[1] = ele
+                suspect = wordnet.synsets(suspect)
                 for ele in typelist:
-                    type = wordnet.synsets(ele)[0]
-                    value = 0
-                    if type.wup_similarity(suspect) == None:
-                        value = 0
-                    else:
-                        value = type.wup_similarity(suspect)
-                    if max[0] < value:
-                        max[0] = value
-                        max[1] = ele
+                    related_verbs = wordnet.synsets(ele)
+                    for a, b in itertools.product(related_verbs, suspect):
+                        if wordnet.wup_similarity(a, b) == None:
+                            d = 0
+                        else:
+                            d = wordnet.wup_similarity(a, b)
+                        if d > max[0]:
+                            max[0] = d
+                            max[1] = ele
                 word = [" ".join(word).lower()]
                 word.append(max[1])
         return word
@@ -107,6 +118,7 @@ class Story:
         {<DT>?<JJS><NNS|NN>?}
         {<DT>?<PRP|NN|NNS><POS><NN|NNP|NNS>*}
         {<DT>?<NNP>+<POS><NN|NNP|NNS>*}
+        {<NNP>+}
         {<DT|PRP\$>?<RB>?<JJ|JJR|VBN|VBG>*<NN|NNP|NNS>+}
         {<WP|WDT|PRP|EX>}
         {<DT><JJ>*<CD>}
@@ -148,7 +160,7 @@ class Story:
                     prop.append(NP[1])
                     nerchunk_story[i].append(prop)
                     start += 1
-        # print(nerchunk_story)
+        print(nerchunk_story)
         # Normalize out put of all marked NE
         # NPchunk_tagged = [[]for i in range(len(nerchunk_story))]
         # for k,sent in enumerate(nerchunk_story):

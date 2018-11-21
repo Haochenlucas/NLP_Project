@@ -125,11 +125,48 @@ for foldname in instances:
                         s_score += 0
                     else:
                         s_score += 1
+                else:
+                    if wordnet.synsets(word[0]):
+                        for qword in q_sent:
+                            if wordnet.synsets(qword[0]):
+                                max_similarity = 0
+                                if word[0] not in stopWords and qword[0] not in stopWords:
+                                    for a, b in itertools.product(wordnet.synsets(qword[0]), wordnet.synsets(word[0])):
+                                        if wordnet.wup_similarity(a, b) == None:
+                                            d = 0
+                                        else:
+                                            d = wordnet.wup_similarity(a, b)
+# overlap(gloss(w1),gloss(w2)) +
+# overlap(gloss(hypo(w1),hypo(w2))) +
+# overlap(gloss(w1),gloss(hypo(w1))) +
+# overlap(gloss(hypo(w1)),gloss(w2)))
+                                        if d > max_similarity:
+                                            max_similarity = d
+                                    if max_similarity > 0.66:
+                                        s_score += max_similarity
             score.append(s_score)
         score_table.append(score)
     print(score_table)
 
     for i,q_sent in enumerate(NE_Q_chuck):
+        # # VB score
+        # for word in q_sent:
+        #     if re.match("VB\w+", word[1]):
+        #         if wordnet.synsets(word[0]):
+        #             for j, s_sent in enumerate(NE_S_chuck):
+        #                 for w in s_sent:
+        #                     if re.match("VB\w+", w[1]):
+        #                         if wordnet.synsets(w[0]):
+        #                             max_similarity = 0
+        #                             for a, b in itertools.product(wordnet.synsets(w[0]), wordnet.synsets(word[0])):
+        #                                 if wordnet.wup_similarity(a, b) == None:
+        #                                     d = 0
+        #                                 else:
+        #                                     d = wordnet.wup_similarity(a, b)
+        #                                 if d > max_similarity:
+        #                                     max_similarity = d
+        #                             if max_similarity > 0.66:
+        #                                 score_table[i][j] += 1
         prop = list(list(zip(*q_sent))[1])
         for word in q_sent:
             # who rules:
@@ -155,7 +192,7 @@ for foldname in instances:
                     tags = list(list(zip(*sent))[1])
                     if(('LOCATION' in tags) or ('place' in tags) or ('ORGANIZATION' in tags) or ('organization' in tags)):
                         score_table[i][j] += 6
-            
+
             elif(word[0].lower() == "when"):
                 for j, sent in enumerate(NE_S_chuck):
                     tags = list(list(zip(*sent))[1])
@@ -163,24 +200,7 @@ for foldname in instances:
                         score_table[i][j] += 4
                     if(("start" in q_sent or "begin" in q_sent) and ("start" in tags or "begin" in tags or "since" in tags or "year" in tags)):
                         score_table[i][j] += 20
-                # VB score
-                # for word in q_sent:
-                #     if re.match("VB\w+", word[1]):
-                #         if  wordnet.synsets(word[0]):
-                #             for j, s_sent in enumerate(NE_S_chuck):
-                #                 for w in s_sent:
-                #                     if re.match("VB\w+", w[1]):
-                #                         if wordnet.synsets(w[0]):
-                #                             max_similarity = 0
-                #                             for a, b in itertools.product(wordnet.synsets(w[0]), wordnet.synsets(word[0])):
-                #                                 if wordnet.wup_similarity(a, b) == None:
-                #                                     d = 0
-                #                                 else:
-                #                                     d = wordnet.wup_similarity(a, b)
-                #                                 if d > max_similarity:
-                #                                     max_similarity = d
-                #                             if max_similarity > 0.66:
-                #                                 score_table[i][j] += 1
+
 
 
     print(score_table)
@@ -197,6 +217,5 @@ for foldname in instances:
             if (a != ""):
                 if(a not in list(list(zip(*NE_Q_chuck[i]))[0])):
                     print("Answer: " + answer[m])
-        
-        print("\n")
+
         print("\n")
