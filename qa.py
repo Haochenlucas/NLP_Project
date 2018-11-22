@@ -22,6 +22,9 @@ def filter_NE_Chuck(NE_chuck):
             if(chuck[0] in badword):
                 chuck[1] = "none"
 
+def give_score_to_how(followingChuck, score_table):
+    placeholder = 1
+
 # NE_S_chuck: NE chuck for sentence i of the story
 # NE_Q_chuck: NE chuck for sentence j of the sentence
 # def match_type(score, NE_S_chuck, NE_Q_chuck, questionType):
@@ -43,7 +46,6 @@ instances = []
 line = input.readline()
 line = line.replace('\n','')
 stopWords = set(stopwords.words('english'))
-print(stopWords)
 while (line):
     instances.append(line)
     line = input.readline()
@@ -139,7 +141,7 @@ for foldname in instances:
 
     for i,q_sent in enumerate(NE_Q_chuck):
         prop = list(list(zip(*q_sent))[1])
-        for word in q_sent:
+        for j,word in enumerate(q_sent):
             # who rules:
             if(word[0].lower() == "who"):
                 if 'PERSON' not in prop and 'ORGANIZATION'not in prop:
@@ -171,6 +173,10 @@ for foldname in instances:
                         score_table[i][j] += 4
                     if(("start" in q_sent or "begin" in q_sent) and ("start" in tags or "begin" in tags or "since" in tags or "year" in tags)):
                         score_table[i][j] += 20
+                        
+            elif(word[0].lower() == "how"):
+                give_score_to_how(q_sent[j+1], score_table)
+                
 
     print(score_table)
     # O/I the answer
