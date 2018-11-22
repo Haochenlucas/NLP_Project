@@ -57,7 +57,7 @@ class Question():
                 word.append(catg[0])
             else:
                 # suspect = wordnet.synsets(suspect)[0]
-                typelist = ['organization','person', 'place','time','measure']
+                typelist = ['organization','person', 'location','time','measure','reason']
                 max = [0.7, catg[0]]
                 # for ele in typelist:
                 #     type = wordnet.synsets(ele)[0]
@@ -159,7 +159,7 @@ class Question():
         {<DT>?<JJS><NNS|NN>?}
         {<DT>?<PRP|NN|NNS><POS><NN|NNP|NNS>*}
         {<DT>?<NNP>+<POS><NN|NNP|NNS>*}
-        {<NNP>+}
+        {<DT>?<NNP>+}
         {<DT|PRP\$>?<RB>?<JJ|JJR|VBN|VBG>*<NN|NNP|NNS>+}
         {<WP|WDT|PRP|EX>}
         {<DT><JJ>*<CD>}
@@ -275,7 +275,7 @@ class Question():
                     elif(word[0].lower() == "where"):
                         self.answer_NP.append(["LOCATION", "ORGANIZATION",'organization','place'])
                     elif(word[0].lower() == "why"):
-                        self.answer_NP.append(["EVERYTHING"])
+                        self.answer_NP.append(["reason"])
                     elif(word[0].lower() == "how"):
                         self.answer_NP.append(["MONEY", "TIME","measure"])
                     break

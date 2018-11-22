@@ -9,7 +9,9 @@ def find_answer(best, question,i):
     answer = []
     for sent_idx in best:
             for NE in NE_S_chuck[sent_idx]:
-                if (NE[-1] in question.answer_NP[i]):
+                if(question.questions[i][0].lower() == "why"):
+                    HERE = 0
+                elif (NE[-1] in question.answer_NP[i]):
                     answer.append(NE[0])
     return answer
 
@@ -41,6 +43,7 @@ instances = []
 line = input.readline()
 line = line.replace('\n','')
 stopWords = set(stopwords.words('english'))
+print(stopWords)
 while (line):
     instances.append(line)
     line = input.readline()
@@ -79,34 +82,37 @@ for foldname in instances:
     score_table=[]
     for x,q_sent in enumerate(NE_Q_chuck):
         score = []
+        q_NE = list(list(zip(*q_sent))[0])
+        q_NE_lower = [i.lower() for i in q_NE]
+        q_words_lower = [i.lower() for i in q_bags[x]]
         for s_sent in NE_S_chuck:
             s_score = 0
+            scored_Schunck = []
             for word in s_sent:
                 notFound = True
                 for w in word[0].split():
-                    q_words_lower = [i.lower() for i in q_bags[x]]
                     if w in q_words_lower:
                         notFound = True
                         if w in stopWords:
                             s_score += 0
                         else:
                             scored = False
-                            scored_chuck = []
+                            scored_Qchuck = []
                             # Mark the chuck as scored and not add score again if any word in chuck shows up
                             # print(NE_Q_chuck)
-                            q_NE = list(list(zip(*q_sent))[0])
-                            q_NE_lower = [i.lower() for i in q_NE]
                             for chuck in q_NE_lower:
                                 if (w in chuck):
                                     notFound = False
                                     chuck_i = q_NE_lower.index(chuck)
-                                    if (chuck_i not in scored_chuck):
+                                    if (chuck_i not in scored_Qchuck and w not in scored_Schunck):
                                         s_score += 1
                                         scored = True
-                                        scored_chuck.append(chuck_i)
+                                        scored_Schunck.append(w)
+                                        scored_Qchuck.append(chuck_i)
                                         break
-                            if(not scored):
+                            if(not scored and w not in scored_Schunck):
                                 s_score += 1
+                                scored_Schunck.append(w)
 
                 if(notFound):
                     if wordnet.synsets(word[0]):
@@ -132,24 +138,6 @@ for foldname in instances:
     print(score_table)
 
     for i,q_sent in enumerate(NE_Q_chuck):
-        # # VB score
-        # for word in q_sent:
-        #     if re.match("VB\w+", word[1]):
-        #         if wordnet.synsets(word[0]):
-        #             for j, s_sent in enumerate(NE_S_chuck):
-        #                 for w in s_sent:
-        #                     if re.match("VB\w+", w[1]):
-        #                         if wordnet.synsets(w[0]):
-        #                             max_similarity = 0
-        #                             for a, b in itertools.product(wordnet.synsets(w[0]), wordnet.synsets(word[0])):
-        #                                 if wordnet.wup_similarity(a, b) == None:
-        #                                     d = 0
-        #                                 else:
-        #                                     d = wordnet.wup_similarity(a, b)
-        #                                 if d > max_similarity:
-        #                                     max_similarity = d
-        #                             if max_similarity > 0.66:
-        #                                 score_table[i][j] += 1
         prop = list(list(zip(*q_sent))[1])
         for word in q_sent:
             # who rules:
@@ -183,8 +171,6 @@ for foldname in instances:
                         score_table[i][j] += 4
                     if(("start" in q_sent or "begin" in q_sent) and ("start" in tags or "begin" in tags or "since" in tags or "year" in tags)):
                         score_table[i][j] += 20
-
-
 
     print(score_table)
     # O/I the answer
