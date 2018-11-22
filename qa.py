@@ -90,6 +90,7 @@ for foldname in instances:
         for s_sent in NE_S_chuck:
             s_score = 0
             scored_Schunck = []
+            scored_Qchuck = []
             for word in s_sent:
                 notFound = True
                 for w in word[0].split():
@@ -100,7 +101,6 @@ for foldname in instances:
                             s_score += 0
                         else:
                             scored = False
-                            scored_Qchuck = []
                             # Mark the chuck as scored and not add score again if any word in chuck shows up
                             # print(NE_Q_chuck)
                             for chuck in q_NE_lower:
@@ -112,7 +112,8 @@ for foldname in instances:
                                         scored = True
                                         scored_Schunck.append(w)
                                         scored_Qchuck.append(chuck_i)
-                                        break
+                                    else:
+                                        scored = True
                             if(not scored and w not in scored_Schunck):
                                 s_score += 1
                                 scored_Schunck.append(w)
