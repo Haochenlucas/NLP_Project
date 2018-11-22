@@ -93,6 +93,7 @@ for foldname in instances:
             for word in s_sent:
                 notFound = True
                 for w in word[0].split():
+                    w = w.lower()
                     if w in q_words_lower:
                         notFound = True
                         if w in stopWords:
